@@ -51,7 +51,6 @@ class SensorsData; //传感器数据对象
 class HomeSensors {
     
 public:
-    HomeSensors(); //构造函数
     /*
         接收请求，解析并且返回对应的结果,
         如果请求为request_sensors,返回data的JSON字符串
@@ -62,10 +61,6 @@ public:
 private:
     SensorsData request_sensors_data();
     void set_sensors(SensorsData data);
-
-    void init_light_sensor();
-    
-    
     
     int read_leds_state() ;
     void set_leds_state(int state) ;

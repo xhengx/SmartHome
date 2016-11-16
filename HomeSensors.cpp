@@ -8,13 +8,13 @@
 
 #include "HomeSensors.h"
 
-#define DEBUG true
+#define DEBUG false
 #define info(msg) if (DEBUG) { Serial.println(msg); }
 
 #define On    true
 #define Off   false
 
-//BH1750FVI light_sensor; //范围 1 - 65535
+BH1750FVI light_sensor; //范围 1 - 65535
 
 
 class SensorsData {
@@ -42,7 +42,7 @@ String parseSensorsDataToJSON(SensorsData data) {
   
   root["tempture"] = data.tempture;
   root["humidity"] = data.humidity;
-//  root["sun_light"] = data.sun_light;
+  root["sun_light"] = data.sun_light;
   
   root["rain_on"] = data.rain_on;
   root["fans_on"] = data.fans_on;
@@ -57,8 +57,6 @@ String parseSensorsDataToJSON(SensorsData data) {
   //转换为字符串返回
   root.printTo(retString);
 
-  if (data.light_on) {info("on");}
-  info("string;;;;" + data.light_on);
   return retString;
 }
 
@@ -75,17 +73,6 @@ SensorsData decode_sensors_data(JsonObject &root) {
   return data;
 }
 
-//构造函数
-HomeSensors::HomeSensors() {
-  //初始化所有的传感器对象
-}
-
-void HomeSensors::init_light_sensor() {
-  
-}
-
-
-
 String HomeSensors::recive_request(String jsonStr) {
     //开始json解析
     DynamicJsonBuffer jsonBuffer;
@@ -96,6 +83,9 @@ String HomeSensors::recive_request(String jsonStr) {
 
     if (request_sensors) {
       info("请求传感器数据...");
+      SensorsData data = request_sensors_data();
+      //将读取到的传感器数据转换为JSON格式的字符串,并且返回
+      return  parseSensorsDataToJSON(data);   
     }
     else if (request_control) {
       info("请求设置传感器...");
@@ -106,9 +96,7 @@ String HomeSensors::recive_request(String jsonStr) {
       set_sensors(data);
     }
     //不管何种操作,最后都要将传感器数据回传给用户
-    SensorsData data = request_sensors_data();
-      //将读取到的传感器数据转换为JSON格式的字符串,并且返回
-    return  parseSensorsDataToJSON(data);   
+    return "";
 }
 
 void HomeSensors::set_sensors(SensorsData data) {
@@ -255,14 +243,12 @@ float HomeSensors::read_humidity_value() {
 }
 // 获取阳光值
 float HomeSensors::read_sun_light_value() {
-    info("sun_light");
-//    light_sensor.begin();
-//    light_sensor.SetAddress(Device_Address_H);
-//    light_sensor.SetMode(Continuous_H_resolution_Mode);
-//    uint16_t lux = light_sensor.GetLightIntensity();// Get Lux value
-//
-//    info("lux----> " + lux);
-    return 0.0;
+    info("获取阳光强度");
+    light_sensor.begin();
+    light_sensor.SetAddress(Device_Address_H);
+    light_sensor.SetMode(OneTime_H_resolution_Mode);
+    uint16_t lux = light_sensor.GetLightIntensity();// Get Lux value
+    return lux;
 }
 
 
