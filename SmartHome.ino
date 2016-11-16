@@ -10,9 +10,9 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-   String req = "{\"request_sensors\" : true, \"control\":{\"set_curtain_on\":true}}";
-   String result = s.recive_request(req);
-   Serial.println("res:" + result);
+  String req = "{\"request_sensors\" : true, \"control\":{\"set_curtain_on\":true}}";
+  String result = s.recive_request(req);
+  Serial.println("res:" + result);
   delay(100000);
 }
 

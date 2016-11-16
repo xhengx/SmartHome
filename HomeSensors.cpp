@@ -21,7 +21,7 @@ String parseSensorsDataToJSON(SensorsData data) {
   root["tempture"] = data.tempture;
   root["humidity"] = data.humidity;
   root["sun_light"] = data.sun_light;
-  
+  root["rain_level"] = data.rain_level;
   root["rain_on"] = data.rain_on;
   root["fans_on"] = data.fans_on;
   root["curtain_on"] = data.curtain_on;
@@ -61,9 +61,6 @@ String HomeSensors::recive_request(String jsonStr) {
 
     if (request_sensors) {
       info("请求传感器数据...");
-      SensorsData data = request_sensors_data();
-      //将读取到的传感器数据转换为JSON格式的字符串,并且返回
-      return  parseSensorsDataToJSON(data);   
     }
     else if (request_control) {
       info("请求设置传感器...");
@@ -74,13 +71,15 @@ String HomeSensors::recive_request(String jsonStr) {
       set_sensors(data);
     }
     //不管何种操作,最后都要将传感器数据回传给用户
-    return "";
+    SensorsData data = request_sensors_data();
+    //将读取到的传感器数据转换为JSON格式的字符串,并且返回
+    return  parseSensorsDataToJSON(data);   
 }
 
 void HomeSensors::set_sensors(SensorsData data) {
   
   info("开始设置传感器...");
-
+  
   sensors.set_leds_state(data.light_on);
   sensors.set_rain_state(data.fans_on);
   sensors.set_fans_state(data.fans_on);
@@ -99,6 +98,7 @@ SensorsData HomeSensors::request_sensors_data() {
   data.tempture = sensors.read_tempture_value();
   data.humidity = sensors.read_humidity_value();
   data.sun_light = sensors.read_sun_light_value();
+  data.rain_level = sensors.read_rain_level();
   data.rain_on = sensors.read_rain_state();
   data.fans_on = sensors.read_fans_state();
   data.curtain_on = sensors.read_curtain_state();

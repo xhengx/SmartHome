@@ -13,11 +13,21 @@
 #include <dht11.h>
 
 BH1750FVI light_sensor; //范围 1 - 65535
-dht11 DHT11; //温湿度传感器
+dht11   DHT11; //温湿度传感器
+
+//传感器引脚定义
 #define DHT11PIN 2
+#define RAINPIN  A0
 
 #define On    true
 #define Off   false
+
+#define RAIN_SENSOR_MIN 0     // 值越小,雨量越大
+#define RAIN_SENSOR_MAX 1024  // 值越大,雨量最小
+
+
+
+
 
 //温湿度相关转换函数
 double Fahrenheit(double celsius);
@@ -49,6 +59,14 @@ void Sensors::set_rain_state(int state) {
       info("关闭雨水感应传感器");
    }
 }
+int Sensors::read_rain_level() {
+  int sensorReading = analogRead(RAINPIN);
+  //将雨水值映射为三个等级,0 大雨, 1 有雨, 2 没雨
+  int range = map(sensorReading, RAIN_SENSOR_MIN, RAIN_SENSOR_MAX, 0, 3); 
+  
+  return range;
+}
+
 // 设置获取风扇状态
 int Sensors::read_fans_state() {
     return 0;

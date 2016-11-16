@@ -18,6 +18,7 @@ class Sensors {
 
     int read_rain_state() ;
     void set_rain_state(int state);
+    int read_rain_level();
 
     int read_fans_state() ;
     void set_fans_state(int state);

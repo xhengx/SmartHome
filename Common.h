@@ -10,7 +10,7 @@
 #define Common_h
 
 #define DEBUG false
-#define info(msg) if (DEBUG) { Serial.println(msg); }
+#define info(msg) if (DEBUG) { Serial.println(msg); Serial.flush();}
 
 
 #endif /* Common_h */

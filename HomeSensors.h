@@ -19,6 +19,7 @@
     "tempture": 30.3
     "humidity": 0.85
     "sun_light": 900
+    "rain_level": 2 //0 大雨, 1 有雨, 2 没雨
     "rain_on": false
     "fans_on": false
     "curtain_on": true
@@ -51,8 +52,7 @@ class HomeSensors {
     
 public:
     /*
-        接收请求，解析并且返回对应的结果,
-        如果请求为request_sensors,返回data的JSON字符串
+        接收请求，解析并且返回对应的结果,结果返回dataJSON字符串
      */
     String recive_request(String jsonStr);
     
