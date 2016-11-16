@@ -13,6 +13,7 @@
 #include <ArduinoJson.h> //arduino json解析库
 #include <BH1750FVI.h> //阳光强度感应
 #include <Wire.h>
+#include <dht11.h>
 
 //使用JSON来向外传输传感器数据,做到平台通用
 /*
