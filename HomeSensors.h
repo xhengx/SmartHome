@@ -11,9 +11,7 @@
 
 #include <arduino.h> //包含整个arduino环境
 #include <ArduinoJson.h> //arduino json解析库
-#include <BH1750FVI.h> //阳光强度感应
-#include <Wire.h>
-#include <dht11.h>
+#include "SensorsData.h"
 
 //使用JSON来向外传输传感器数据,做到平台通用
 /*
@@ -58,38 +56,9 @@ public:
      */
     String recive_request(String jsonStr);
     
-    
 private:
     SensorsData request_sensors_data();
     void set_sensors(SensorsData data);
-    
-    int read_leds_state() ;
-    void set_leds_state(int state) ;
-    
-    int read_rain_state() ;
-    void set_rain_state(int state);
-    
-    int read_fans_state() ;
-    void set_fans_state(int state);
-    
-    int read_wet_state() ;
-    void set_wet_state(int state) ;
-    
-    int read_curtain_state() ;
-    void set_curtain_state(int state) ;
-    
-    int read_tempture_state() ;
-    void set_tempture_state(int state) ;
-    
-    int read_humidity_state() ;
-    void set_humidity_state(int state) ;
-    
-    int read_sun_light_state() ;
-    void set_sun_light_state(int state) ;
-    
-    float read_tempture_value() ;
-    float read_humidity_value() ;
-    float read_sun_light_value() ;
 };
 
 #endif /* HomeSensors_h */

@@ -7,71 +7,10 @@
 //
 
 #include "HomeSensors.h"
-
-#define DEBUG false
-#define info(msg) if (DEBUG) { Serial.println(msg); }
-
-#define On    true
-#define Off   false
-
-BH1750FVI light_sensor; //范围 1 - 65535
-dht11 DHT11; //温湿度传感器
-#define DHT11PIN 2
-
-
-class SensorsData {
-public:
-  //传感器数据
-  float tempture;
-  float humidity;
-  float sun_light;
-  //所有传感器默认关闭状态
-  bool  rain_on       = false;
-  bool  fans_on       = false;
-  bool  curtain_on    = false;
-  bool  flower_wet_on = false;
-  bool  light_on      = false;
-  bool  sun_light_on  = false;
-  bool  humidity_on   = false;
-  bool  tempture_on   = false;
-};
-//
-double Fahrenheit(double celsius) 
-{
-        return 1.8 * celsius + 32;
-}    //摄氏温度度转化为华氏温度
-
-double Kelvin(double celsius)
-{
-        return celsius + 273.15;
-}     //摄氏温度转化为开氏温度
-
-// 露点（点在此温度时，空气饱和并产生露珠）
-// 参考: http://wahiduddin.net/calc/density_algorithms.htm 
-double dewPoint(double celsius, double humidity)
-{
-        double A0= 373.15/(273.15 + celsius);
-        double SUM = -7.90298 * (A0-1);
-        SUM += 5.02808 * log10(A0);
-        SUM += -1.3816e-7 * (pow(10, (11.344*(1-1/A0)))-1) ;
-        SUM += 8.1328e-3 * (pow(10,(-3.49149*(A0-1)))-1) ;
-        SUM += log10(1013.246);
-        double VP = pow(10, SUM-3) * humidity;
-        double T = log(VP/0.61078);   // temp var
-        return (241.88 * T) / (17.558-T);
-}
-
-// 快速计算露点，速度是5倍dewPoint()
-// 参考: http://en.wikipedia.org/wiki/Dew_point
-double dewPointFast(double celsius, double humidity)
-{
-        double a = 17.271;
-        double b = 237.7;
-        double temp = (a * celsius) / (b + celsius) + log(humidity/100);
-        double Td = (b * temp) / (a - temp);
-        return Td;
-}
-//
+#include "SensorsData.h"
+#include "Sensors.h"
+#include "Common.h"
+Sensors sensors;
 
 String parseSensorsDataToJSON(SensorsData data) {
 
@@ -142,14 +81,14 @@ void HomeSensors::set_sensors(SensorsData data) {
   
   info("开始设置传感器...");
 
-  set_leds_state(data.light_on);
-  set_rain_state(data.fans_on);
-  set_fans_state(data.fans_on);
-  set_wet_state(data.flower_wet_on);
-  set_curtain_state(data.curtain_on);
-  set_tempture_state(data.tempture_on);
-  set_humidity_state(data.humidity_on);
-  set_sun_light_state(data.sun_light_on);
+  sensors.set_leds_state(data.light_on);
+  sensors.set_rain_state(data.fans_on);
+  sensors.set_fans_state(data.fans_on);
+  sensors.set_wet_state(data.flower_wet_on);
+  sensors.set_curtain_state(data.curtain_on);
+  sensors.set_tempture_state(data.tempture_on);
+  sensors.set_humidity_state(data.humidity_on);
+  sensors.set_sun_light_state(data.sun_light_on);
 
   info("设置传感器结束...");
 }
@@ -157,140 +96,21 @@ void HomeSensors::set_sensors(SensorsData data) {
 SensorsData HomeSensors::request_sensors_data() {
   info("开始获取传感器数据...");
   SensorsData data;
-  data.tempture = read_tempture_value();
-  data.humidity = read_humidity_value();
-  data.sun_light = read_sun_light_value();
-  data.rain_on = read_rain_state();
-  data.fans_on = read_fans_state();
-  data.curtain_on = read_curtain_state();
-  data.flower_wet_on = read_wet_state();
-  data.light_on = read_leds_state();
-  data.sun_light_on = read_sun_light_state();
-  data.humidity_on = read_humidity_state();
-  data.tempture_on = read_tempture_state();
+  data.tempture = sensors.read_tempture_value();
+  data.humidity = sensors.read_humidity_value();
+  data.sun_light = sensors.read_sun_light_value();
+  data.rain_on = sensors.read_rain_state();
+  data.fans_on = sensors.read_fans_state();
+  data.curtain_on = sensors.read_curtain_state();
+  data.flower_wet_on = sensors.read_wet_state();
+  data.light_on = sensors.read_leds_state();
+  data.sun_light_on = sensors.read_sun_light_state();
+  data.humidity_on = sensors.read_humidity_state();
+  data.tempture_on = sensors.read_tempture_state();
   info("获取传感器数据结束...");
   return data;
 }
 
-// 设置获取led状态
-int HomeSensors::read_leds_state() {
-    return 1;
-}
-void HomeSensors::set_leds_state(int state) {
-   if (state == On) {
-      info("打开led灯");
-   }
-   else {
-      info("关闭led灯");
-   }
-}
-// 设置获取雨水感应器状态
-int HomeSensors::read_rain_state() {
-    return 0;
-}
-void HomeSensors::set_rain_state(int state) {
-   if (state == On) {
-      info("打开雨水感应传感器");
-   }
-   else {
-      info("关闭雨水感应传感器");
-   }
-}
-// 设置获取风扇状态
-int HomeSensors::read_fans_state() {
-    return 0;
-}
-void HomeSensors::set_fans_state(int state) {
-   if (state == On) {
-      info("打开风扇");
-   }
-   else {
-      info("关闭风扇");
-   }
-}
-
-// 设置获取土壤湿度应器状态
-int HomeSensors::read_wet_state() {
-    return 0;
-}
-void HomeSensors::set_wet_state(int state) {
-   if (state == On) {
-      info("打开植物土壤湿度传感器");
-   }
-   else {
-      info("关闭植物土壤湿度传感器");
-   }
-}
-// 设置获取窗帘状态
-int HomeSensors::read_curtain_state() {
-    return 0;
-}
-
-void HomeSensors::set_curtain_state(int state) {
-
-   if (state == On) {
-      info("打开窗帘");
-   }
-   else {
-      info("关闭窗帘");
-   }
-}
-// 设置获取温度感应器状态
-int HomeSensors::read_tempture_state() {
-    return 0;
-}
-void HomeSensors::set_tempture_state(int state) {
-   if (state == On) {
-      info("打开温度传感器");
-   }
-   else {
-      info("关闭温度传感器");
-   }
-}
-// 设置获取湿度感应器状态
-int HomeSensors::read_humidity_state() {
-    return 0;
-}
-void HomeSensors::set_humidity_state(int state) {
-   if (state == On) {
-      info("打开湿度传感器");
-   }
-   else {
-      info("关闭湿度传感器");
-   }
-}
-// 设置获取阳光感应器状态
-int HomeSensors::read_sun_light_state() {
-    return 1;
-}
-void HomeSensors::set_sun_light_state(int state) {
-   if (state == On) {
-      info("打开阳光强度感应传感器");
-   }
-   else {
-      info("关闭阳光强度感应传感器");
-   }
-}
-
-// 获取温度值
-float HomeSensors::read_tempture_value() {
-  DHT11.read(DHT11PIN);
-  return (float)DHT11.temperature;
-}
-// 获取湿度值
-float HomeSensors::read_humidity_value() {
-  DHT11.read(DHT11PIN);
-  return (float)DHT11.humidity;
-}
-// 获取阳光值
-float HomeSensors::read_sun_light_value() {
-    info("获取阳光强度");
-    light_sensor.begin();
-    light_sensor.SetAddress(Device_Address_H);
-    light_sensor.SetMode(OneTime_H_resolution_Mode);
-    uint16_t lux = light_sensor.GetLightIntensity();// Get Lux value
-    return lux;
-}
 
 
 
