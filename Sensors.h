@@ -25,6 +25,7 @@ class Sensors {
 
     int read_wet_state() ;
     void set_wet_state(int state) ;
+    int read_wet_level();
 
     int read_curtain_state() ;
     void set_curtain_state(int state) ;

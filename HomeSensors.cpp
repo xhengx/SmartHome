@@ -22,6 +22,7 @@ String parseSensorsDataToJSON(SensorsData data) {
   root["humidity"] = data.humidity;
   root["sun_light"] = data.sun_light;
   root["rain_level"] = data.rain_level;
+  root["flower_wet_level"] = data.wet_level;
   root["rain_on"] = data.rain_on;
   root["fans_on"] = data.fans_on;
   root["curtain_on"] = data.curtain_on;
@@ -99,6 +100,7 @@ SensorsData HomeSensors::request_sensors_data() {
   data.humidity = sensors.read_humidity_value();
   data.sun_light = sensors.read_sun_light_value();
   data.rain_level = sensors.read_rain_level();
+  data.wet_level = sensors.read_wet_level();
   data.rain_on = sensors.read_rain_state();
   data.fans_on = sensors.read_fans_state();
   data.curtain_on = sensors.read_curtain_state();

@@ -18,12 +18,18 @@ dht11   DHT11; //温湿度传感器
 //传感器引脚定义
 #define DHT11PIN 2
 #define RAINPIN  A0
+#define WETPIN   A0
 
 #define On    true
 #define Off   false
 
 #define RAIN_SENSOR_MIN 0     // 值越小,雨量越大
 #define RAIN_SENSOR_MAX 1024  // 值越大,雨量最小
+//3V时，在空气中AO读取的值最大为695 ， 浸泡在水里的 最小值245；
+//5V时，在空气中AO读取的值最大为1023 ，浸泡在水里的最小值 245。
+#define WET_MIN      245
+#define WET_MAX_5V   1023
+#define WET_MAX_3V   695
 
 
 
@@ -91,6 +97,13 @@ void Sensors::set_wet_state(int state) {
    else {
       info("关闭植物土壤湿度传感器");
    }
+}
+int Sensors::read_wet_level() {
+  int sensorReading = analogRead(RAINPIN);
+  ////0 水太多, 1 湿润, 2 干
+  int range = map(sensorReading, RAIN_SENSOR_MIN, RAIN_SENSOR_MAX, 0, 3); 
+  
+  return range;
 }
 // 设置获取窗帘状态
 int Sensors::read_curtain_state() {

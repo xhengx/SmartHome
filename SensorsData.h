@@ -18,6 +18,7 @@ class SensorsData {
     float humidity;
     float sun_light;
     int rain_level; //0 大雨, 1 有雨, 2 没雨
+    int wet_level; //0 水太多, 1 正好, 2 干
     //所有传感器默认关闭状态
     bool  rain_on       = false;
     bool  fans_on       = false;

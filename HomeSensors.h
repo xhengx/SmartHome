@@ -20,6 +20,7 @@
     "humidity": 0.85
     "sun_light": 900
     "rain_level": 2 //0 大雨, 1 有雨, 2 没雨
+    "flower_wet_lever": 2 //0 水太多, 1 湿润, 2 干
     "rain_on": false
     "fans_on": false
     "curtain_on": true
